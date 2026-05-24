@@ -1,0 +1,16 @@
+# Rust build artifacts
+target/
+dist/
+**/*.rs.bk
+
+# Per-user Claude Code config (shared config in .claude/settings.json is fine to commit)
+.claude/settings.local.json
+
+# Editor / OS cruft
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+

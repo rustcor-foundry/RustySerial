@@ -1,0 +1,65 @@
+[package]
+name = "rustyserial"
+version = "0.1.0"
+edition = "2021"
+description = "A small, modern, lightweight serial console TUI"
+license = "MIT OR Apache-2.0"
+readme = "README.md"
+keywords = ["serial", "uart", "terminal", "tui"]
+categories = ["command-line-utilities", "hardware-support"]
+autobins = false
+build = "build.rs"
+
+[[bin]]
+name = "rustyserial"
+path = "src/main.rs"
+
+[[bin]]
+name = "rustyserial-gui"
+path = "src/bin/rustyserial-gui.rs"
+
+[dependencies]
+# Serial port I/O. tokio-serial wraps serialport and gives us async streams,
+# so reads from the port and reads from the keyboard can happen concurrently
+# without polling.
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "sync", "io-util", "time", "fs"] }
+tokio-serial = "5"
+tokio-util = { version = "0.7", features = ["codec"] }
+bytes = "1"
+futures = "0.3"
+
+# TUI. ratatui is the maintained successor to tui-rs. crossterm gives us
+# cross-platform raw-mode terminal handling (Linux/macOS/Windows).
+ratatui = "0.28"
+crossterm = { version = "0.28", features = ["event-stream"] }
+
+# CLI parsing.
+clap = { version = "4", features = ["derive"] }
+
+# Errors and logging.
+anyhow = "1"
+thiserror = "1"
+
+# Used for timestamping log lines.
+chrono = { version = "0.4", default-features = false, features = ["clock"] }
+bevy = "0.14"
+
+# Used by the GUI launcher to decode the bundled PNG into an RGBA buffer for
+# the runtime window icon. Pinned to match the version bevy_image uses.
+image = { version = "0.25", default-features = false, features = ["png"] }
+
+# Direct dep so we can construct a `winit::window::Icon` without going through
+# bevy_winit (which does not re-export the type). Version must match the one
+# Bevy 0.14 pulls in transitively, otherwise we'd have two winit crates and
+# the Icon type wouldn't satisfy bevy_winit's expectations.
+winit = "0.30"
+
+# Embeds assets/rsicon.ico into both compiled .exe files on Windows. No-op on
+# other platforms.
+[target.'cfg(windows)'.build-dependencies]
+winresource = "0.1"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+strip = true
