@@ -10,6 +10,26 @@ TUI for cursor control. If you need a full terminal, pipe through `picocom`
 or `screen`. If you need to see what a microcontroller is actually saying,
 `RustySerial` is the tool.
 
+## Features
+
+- **Safe-by-default view** — control bytes shown as `^X`; a noisy device can't
+  hijack your terminal.
+- **Full line settings** — baud, data bits, parity, stop bits, and hardware
+  (`--rtscts`) or software (`--xonxoff`) flow control.
+- **Survives device reboots** — keeps the session open and auto-reconnects when a
+  port disappears during a firmware flash/reset.
+- **Logging** — append received bytes with timestamps to a file.
+- **Scrollback** — page through history and snap back to the live tail.
+- **Send BREAK** — 250 ms break signal on a keystroke.
+- **Cross-platform** — Linux, macOS, and Windows.
+
+## Two binaries
+
+| Binary | Purpose |
+|---|---|
+| `rustyserial` | the serial console TUI (the main tool) |
+| `rustyserial-gui` | an optional PuTTY-style **Bevy** setup window that launches the console with your chosen settings |
+
 ## Install
 
 ```
