@@ -11,14 +11,21 @@ env:
 jobs:
   build:
     name: build & test (host)
-    runs-on: ubuntu-latest
+    # ubuntu-latest is single-homed on gitea-runner-01 (pve1). Linux CI belongs
+    # on lx-ws01, which is off pve1 and is the fleet's Linux build host.
+    runs-on: [self-hosted, linux, lx-ws01]
     steps:
       - uses: actions/checkout@v4
       - name: Install Linux build deps (Bevy / serial)
         run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends \
-            libasound2-dev libudev-dev pkg-config
+          set -euo pipefail
+          # lx-ws01 is a persistent host runner rather than a fresh container,
+          # so these normally already exist. Only reach for apt when they do not.
+          if ! pkg-config --exists alsa libudev; then
+            sudo apt-get update
+            sudo apt-get install -y --no-install-recommends \
+              libasound2-dev libudev-dev pkg-config
+          fi
       - name: Install stable toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
