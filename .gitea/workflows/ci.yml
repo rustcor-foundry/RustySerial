@@ -30,7 +30,17 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt, clippy
-      - uses: Swatinem/rust-cache@v2
+      # Pinned: v2.9.0+ migrated to node24, which act_runner v0.2.11 cannot run.
+      # v2.8.2 is the last node20 release. Revert to @v2 once the runners are
+      # upgraded.
+      - uses: Swatinem/rust-cache@v2.8.2
+        with:
+          # lx-ws01 is a persistent host runner. rust-cache's save step otherwise
+          # deletes every regular file in ~/.cargo/bin that is not a freshly
+          # cargo-installed tool. On Linux the rustup proxies are hardlinks, so
+          # that would remove cargo, rustc and rustup for every job on the box.
+          # It did exactly that to rustup.exe on ws-ws01 on 2026-09-20.
+          cache-bin: false
       - name: Build
         run: cargo build --all-targets --verbose
       - name: Test
